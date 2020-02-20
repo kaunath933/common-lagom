@@ -2,11 +2,16 @@ package com.knoldus.libs.event
 
 import akka.Done
 import com.datastax.driver.core.BoundStatement
+import com.lightbend.lagom.scaladsl.persistence.cassandra.{CassandraReadSide, CassandraSession}
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEventTag, ReadSideProcessor}
+import scala.concurrent.{ExecutionContext, Future}
 
-import scala.concurrent.Future
+trait EventReadSideProcessor extends ReadSideProcessor[Events] {
 
-abstract class EventReadSideProcessor extends ReadSideProcessor[Events] {
+  def db:CassandraSession
+  val readSide:CassandraReadSide
+
+  override def buildHandler(): ReadSideProcessor.ReadSideHandler[Events]
 
   def aggregateTags: Set[AggregateEventTag[Events]] = Events.Tag.allTags
 

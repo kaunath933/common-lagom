@@ -20,6 +20,8 @@ class CustomerServiceLoader extends LagomApplicationLoader {
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
     new CustomerServiceApplication(context) with LagomDevModeComponents
+
+  override def describeService = Some(readDescriptor[CustomerApi])
 }
 
 abstract class CustomerServiceApplication(context: LagomApplicationContext)

@@ -17,9 +17,9 @@ object GetCustomerCommand {
   implicit val format: Format[GetCustomerCommand] = Json.format
 }
 
-case class DeleteCustomer(id: String) extends Commands[Done]
+case class DeleteCustomerCommand(id: String) extends Commands[Done]
 
-object DeleteCustomer {
-  implicit val format: Format[DeleteCustomer] = Json.format
+object DeleteCustomerCommand {
+  implicit val format: Format[DeleteCustomerCommand] = Json.format
 }
 

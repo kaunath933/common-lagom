@@ -2,7 +2,7 @@ package com.knoldus.example
 
 import akka.Done
 import com.knoldus.customer.api.CustomerDetails
-import com.knoldus.example.command.{CreateCustomerCommand, DeleteCustomer, GetCustomerCommand}
+import com.knoldus.example.command.{CreateCustomerCommand, DeleteCustomerCommand, GetCustomerCommand}
 import com.knoldus.example.event.{CustomerAdded, CustomerDeleted}
 import com.knoldus.example.state.CustomerState
 import com.knoldus.libs.command.Commands
@@ -32,8 +32,8 @@ class CustomerEntity extends PersistentEntity {
         case (CustomerAdded(customer), _) =>
           CustomerState(Some(customer))
       }
-      .onCommand[DeleteCustomer, Done] {
-        case (DeleteCustomer(id), ctx, _) =>{
+      .onCommand[DeleteCustomerCommand, Done] {
+        case (DeleteCustomerCommand(id), ctx, _) =>{
           val event = CustomerDeleted(id)
 
           ctx.thenPersist(event) { _ =>
@@ -50,13 +50,15 @@ class CustomerEntity extends PersistentEntity {
 object CustomerSerializerRegistry extends JsonSerializerRegistry {
   override def serializers = List(
     JsonSerializer[CustomerDetails],
+
     //Commands
-    JsonSerializer[CustomerDetails],
     JsonSerializer[CreateCustomerCommand],
     JsonSerializer[GetCustomerCommand],
+    JsonSerializer[DeleteCustomerCommand],
 
     //Events
     JsonSerializer[CustomerAdded],
+    JsonSerializer[CustomerDeleted],
 
     //state
     JsonSerializer[CustomerState]

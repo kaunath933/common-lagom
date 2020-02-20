@@ -14,11 +14,11 @@ trait CustomerApi extends Service {
 
   override final def descriptor: Descriptor = {
     import Service._
-    named("myLagomProject")
+    named("common-lagom")
       .withCalls(
         restCall(Method.GET, "/api/details/get/:id", getCustomerDetails _),
         restCall(Method.POST, "/api/details/add/:id/:name/:email", addCustomer _),
-        restCall(Method.DELETE, "/api/delete/:id", deleteCustomer _),
+        restCall(Method.DELETE, "/api/delete/:id", deleteCustomer _)
         //restCall(Method.GET, "/gateway")
       ).withAutoAcl(true)
 

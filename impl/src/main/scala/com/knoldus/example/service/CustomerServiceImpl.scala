@@ -3,7 +3,7 @@ package com.knoldus.example.service
 import akka.{Done, NotUsed}
 import com.knoldus.customer.api.{CustomerApi, CustomerDetails}
 import com.knoldus.example.CustomerEntity
-import com.knoldus.example.command.{CreateCustomerCommand, DeleteCustomer, GetCustomerCommand}
+import com.knoldus.example.command.{CreateCustomerCommand, DeleteCustomerCommand, GetCustomerCommand}
 import com.knoldus.libs.command.Commands
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.persistence.{PersistentEntityRef, PersistentEntityRegistry}
@@ -31,7 +31,7 @@ class CustomerServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(im
   }
 
   override def deleteCustomer(id: String): ServiceCall[NotUsed, Done] = ServiceCall { _ =>
-    ref(id).ask(DeleteCustomer(id)).map(_ => {
+    ref(id).ask(DeleteCustomerCommand(id)).map(_ => {
       Done.getInstance()
     })
 
