@@ -2,9 +2,7 @@ package com.knoldus.libs.event
 
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEvent, AggregateEventShards, AggregateEventTag, AggregateEventTagger}
 
-//import play.api.libs.json.{Format, Json}
-
- trait Events extends AggregateEvent[Events] {
+trait Events extends AggregateEvent[Events] {
   override def aggregateTag: AggregateEventTagger[Events] = Events.Tag
 }
 

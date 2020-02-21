@@ -4,17 +4,18 @@ import akka.Done
 import com.datastax.driver.core.{BoundStatement, PreparedStatement}
 import com.knoldus.customer.api.CustomerDetails
 import com.knoldus.libs.event.{EventReadSideProcessor, Events}
-import com.lightbend.lagom.scaladsl.persistence.{AggregateEventTag, ReadSideProcessor}
+import com.lightbend.lagom.scaladsl.persistence.ReadSideProcessor
 import com.lightbend.lagom.scaladsl.persistence.cassandra.{CassandraReadSide, CassandraSession}
+
 import scala.concurrent.{ExecutionContext, Future}
 
-case class CustomerEventReadSideProcessor(db:CassandraSession,readSide: CassandraReadSide)(implicit ec: ExecutionContext) extends EventReadSideProcessor {
+case class CustomerEventReadSideProcessor(db: CassandraSession, readSide: CassandraReadSide)(implicit ec: ExecutionContext) extends EventReadSideProcessor {
 
   var addEntity: PreparedStatement = _
 
   var deleteEntity: PreparedStatement = _
 
- override def buildHandler(): ReadSideProcessor.ReadSideHandler[Events] = readSide.builder[Events]("EventReadSidePreocessor")
+  override def buildHandler(): ReadSideProcessor.ReadSideHandler[Events] = readSide.builder[Events]("EventReadSidePreocessor")
     .setGlobalPrepare(() => createTable)
     .setPrepare(_ => prepareStatements())
     .setEventHandler[CustomerAdded](ese => addEntity(ese.event.customer))
@@ -37,7 +38,7 @@ case class CustomerEventReadSideProcessor(db:CassandraSession,readSide: Cassandr
       Done
     })).flatten
 
-    def addEntity(entity: CustomerDetails): Future[List[BoundStatement]] = {
+  def addEntity(entity: CustomerDetails): Future[List[BoundStatement]] = {
     val bindInsertCustomer: BoundStatement = addEntity.bind()
     bindInsertCustomer.setString("id", entity.id)
     bindInsertCustomer.setString("name", entity.name)
@@ -45,7 +46,7 @@ case class CustomerEventReadSideProcessor(db:CassandraSession,readSide: Cassandr
     Future.successful(List(bindInsertCustomer))
   }
 
-   def deleteEntity(entity: String): Future[List[BoundStatement]] = {
+  def deleteEntity(entity: String): Future[List[BoundStatement]] = {
     val bindDeleteCustomer: BoundStatement = deleteEntity.bind()
     bindDeleteCustomer.setString("id", entity)
     Future.successful(List(bindDeleteCustomer))
