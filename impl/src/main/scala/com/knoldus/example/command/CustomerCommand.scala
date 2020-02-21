@@ -22,4 +22,3 @@ case class DeleteCustomerCommand(id: String) extends Commands[Done]
 object DeleteCustomerCommand {
   implicit val format: Format[DeleteCustomerCommand] = Json.format
 }
-

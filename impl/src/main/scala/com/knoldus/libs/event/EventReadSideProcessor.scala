@@ -19,7 +19,4 @@ trait EventReadSideProcessor extends ReadSideProcessor[Events] {
 
   def prepareStatements(): Future[Done]
 
-//  def addEntity[T](entity: T): Future[List[BoundStatement]]
-//
-//  def deleteEntity[T](entity: T): Future[List[BoundStatement]]
 }

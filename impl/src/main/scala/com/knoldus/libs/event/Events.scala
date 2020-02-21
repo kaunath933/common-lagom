@@ -12,4 +12,3 @@ object Events {
   val NumShards = 3
   val Tag: AggregateEventShards[Events] = AggregateEventTag.sharded[Events](NumShards)
 }
-

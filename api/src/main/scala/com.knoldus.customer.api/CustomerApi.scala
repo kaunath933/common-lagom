@@ -19,7 +19,6 @@ trait CustomerApi extends Service {
         restCall(Method.GET, "/api/details/get/:id", getCustomerDetails _),
         restCall(Method.POST, "/api/details/add/:id/:name/:email", addCustomer _),
         restCall(Method.DELETE, "/api/delete/:id", deleteCustomer _)
-        //restCall(Method.GET, "/gateway")
       ).withAutoAcl(true)
 
   }

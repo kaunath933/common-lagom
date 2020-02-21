@@ -26,7 +26,7 @@ class CustomerServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(im
   override def getCustomerDetails(id: String): ServiceCall[NotUsed, String] = {
     ServiceCall { _ =>
       ref(id).ask(GetCustomerCommand(id)).map(cust =>
-        s"name for $id is ${cust.name}")
+        s"name for $id  ${cust.name}")
     }
   }
 
