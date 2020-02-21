@@ -17,7 +17,7 @@ class CustomerServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(im
       val cust = CustomerDetails(id, name, email)
       ref(cust.id).ask(CreateCustomerCommand(cust)).map {
         case Done => {
-          s"$name, you ae registered "
+          s"$name, you are registered "
         }
       }
     }
