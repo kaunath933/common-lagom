@@ -10,6 +10,7 @@ import org.scalatest.{AsyncWordSpec, BeforeAndAfterAll, Matchers}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
 
 class CustomerServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
 
@@ -30,29 +31,37 @@ class CustomerServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
     populateData(session)
 
   }
+  override protected def afterAll() = server.stop()
 
   private def createTable(session: CassandraSession): Unit = {
 
+    val createKeyspace = session.executeWrite("CREATE KEYSPACE IF NOT EXISTS customerdatabase WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};")
+    Await.result(createKeyspace, 10.seconds)
+
     //Create table
-    val createTable = session.executeCreateTable("""CREATE TABLE IF NOT EXISTS customer.customer (id text PRIMARY KEY, name text, email text)""".stripMargin)
-    Await.result(createTable, 20 seconds)
+    val createTable = session.executeCreateTable("""CREATE TABLE IF NOT EXISTS customerdatabase.customer (id text PRIMARY KEY, name text, email text)""".stripMargin)
+    Await.result(createTable, 10 seconds)
   }
 
   private def populateData(session: CassandraSession): Unit = {
-    val customer1 = CustomerDetails("1","Bob","bob@gmail.com")
-    val insertProduct: Future[Done] = session.executeWrite("INSERT INTO product (id, name, email) VALUES (?, ?, ?)", customer1.id,
-      customer1.name, customer1.email)
-    Await.result(insertProduct, 20 seconds)
-  }
+    val customer = CustomerDetails("1","Bob","bob@gmail.com")
+    val insertProduct: Future[Done] = session.executeWrite("INSERT INTO customerdatabase.customer (id, name, email) VALUES (?, ?, ?)", customer.id,
+      customer.name, customer.email)
+
+//    insertProduct.onComplete{
+//    case Success(value) => println("value is" +value)
+//    case Failure(exception) => println("exception is" +exception)
+//  }
+    Await.result(insertProduct, 10 seconds)
+}
 
 
-  "Product service" should {
-    val customer2 = CustomerDetails("1","Bob","bob@gmail.com")
-    val actualResult = "name for 1  Bob"
-    "should return product by id" in {
+  "/api/details/get/:id" should {
+    val expectedResult = CustomerDetails("1","Bob","bob@gmail.com")
+    "should return customer name by id" in {
       client.getCustomerDetails("1").invoke().map { response =>
         println(response + "response")
-        response should ===(actualResult)
+        response should ===(expectedResult)
 
       }
     }

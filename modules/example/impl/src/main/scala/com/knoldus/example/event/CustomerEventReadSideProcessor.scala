@@ -3,6 +3,7 @@ package com.knoldus.example.event
 import akka.Done
 import com.datastax.driver.core.{BoundStatement, PreparedStatement}
 import com.knoldus.customer.api.CustomerDetails
+import com.knoldus.libs.constants.QueryConstants
 import com.knoldus.libs.event.{EventReadSideProcessor, Events}
 import com.lightbend.lagom.scaladsl.persistence.ReadSideProcessor
 import com.lightbend.lagom.scaladsl.persistence.cassandra.{CassandraReadSide, CassandraSession}
@@ -23,17 +24,16 @@ case class CustomerEventReadSideProcessor(db: CassandraSession, readSide: Cassan
     .build()
 
   override def createTable(): Future[Done] = {
-    db.executeCreateTable(
-      """CREATE TABLE IF NOT EXISTS customerdatabase.customer (
-        |id text PRIMARY KEY, name text, email text)""".stripMargin)
+    db.executeCreateTable(QueryConstants.CREATE_TABLE
+      .stripMargin)
   }
 
   def prepareStatements(): Future[Done] =
-    db.prepare("INSERT INTO customerdatabase.customer (id, name, email) VALUES (?, ?, ?)")
+    db.prepare(QueryConstants.INSERT_PRODUCT)
       .map { ps =>
         addEntity = ps
         Done
-      }.map(_ => db.prepare("DELETE FROM customer where id = ?").map(ps => {
+      }.map(_ => db.prepare(QueryConstants.DELETE_PRODUCT).map(ps => {
       deleteEntity = ps
       Done
     })).flatten
